@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "When_a_new_email_arrives_(V3)": {
+      "type": "OpenApiConnectionNotification",
+      "inputs": {
+        "parameters": {
+          "folderPath": "Inbox",
+          "subjectFilter": "SERVICE",
+          "importance": "Any",
+          "includeAttachments": false
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connection": "shared_office365",
+          "operationId": "OnNewEmailV3"
+        }
+      },
+      "splitOn": "@triggerOutputs()?['body/value']"
+    }
+  },
+  "actions": {
+    "Compose": {
+      "type": "Compose",
+      "inputs": "Service call logged | From: @{triggerOutputs()?['body/from']} | Subject: @{triggerOutputs()?['body/subject']} | Received: @{triggerOutputs()?['body/receivedDateTime']}",
+      "runAfter": {}
+    },
+    "Send_an_email_(V2)": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "emailMessage/To": "admin@tertiaryinfotech.onmicrosoft.com",
+          "emailMessage/Subject": "Service call logged",
+          "emailMessage/Body": "<p>A new service call was received:</p><p>@{outputs('Compose')}</p>",
+          "emailMessage/Importance": "Normal"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connection": "shared_office365",
+          "operationId": "SendEmailV2"
+        }
+      },
+      "runAfter": {
+        "Add_a_row_into_a_table": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Add_a_row_into_a_table": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "source": "me",
+          "drive": "OneDrive",
+          "file": "/KinetEco Service Calls.xlsx",
+          "table": "ServiceCalls",
+          "item/Reported By": "@triggerOutputs()?['body/from']",
+          "item/Problem": "@triggerOutputs()?['body/subject']",
+          "item/Date Reported": "@triggerOutputs()?['body/receivedDateTime']"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_excelonlinebusiness",
+          "connection": "shared_excelonlinebusiness",
+          "operationId": "AddRowV2"
+        }
+      },
+      "runAfter": {
+        "Compose": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

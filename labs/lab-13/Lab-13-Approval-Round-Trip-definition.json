@@ -1,0 +1,145 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "PowerApps_(V2)": {
+      "type": "Request",
+      "kind": "PowerApp",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "Applicant": {
+              "type": "string"
+            },
+            "LeaveType": {
+              "type": "string"
+            },
+            "StartDate": {
+              "type": "string"
+            },
+            "Days": {
+              "type": "number"
+            },
+            "Reason": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "Add_pending_row": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "source": "me",
+          "drive": "OneDrive",
+          "file": "/LeaveLog.xlsx",
+          "table": "LeaveLog",
+          "item/Applicant": "@triggerBody()['Applicant']",
+          "item/LeaveType": "@triggerBody()['LeaveType']",
+          "item/StartDate": "@triggerBody()['StartDate']",
+          "item/Days": "@triggerBody()['Days']",
+          "item/Status": "Pending"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_excelonlinebusiness",
+          "connection": "shared_excelonlinebusiness",
+          "operationId": "AddRowV2"
+        }
+      },
+      "runAfter": {}
+    },
+    "Start_and_wait_for_an_approval": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "approvalType": "Basic",
+          "ApprovalCreationInput/title": "Leave request from @{triggerBody()['Applicant']}",
+          "ApprovalCreationInput/assignedTo": "admin@tertiaryinfotech.onmicrosoft.com",
+          "ApprovalCreationInput/details": "@{triggerBody()['Days']} day(s) of @{triggerBody()['LeaveType']} from @{triggerBody()['StartDate']}"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_approvals",
+          "connection": "shared_approvals",
+          "operationId": "StartAndWaitForAnApproval"
+        }
+      },
+      "runAfter": {
+        "Add_pending_row": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Condition": {
+      "type": "If",
+      "expression": {
+        "equals": [
+          "@body('Start_and_wait_for_an_approval')?['outcome']",
+          "Approve"
+        ]
+      },
+      "actions": {
+        "Set_approved": {
+          "type": "Compose",
+          "inputs": "Approved",
+          "runAfter": {}
+        }
+      },
+      "else": {
+        "actions": {
+          "Set_rejected": {
+            "type": "Compose",
+            "inputs": "Rejected",
+            "runAfter": {}
+          }
+        }
+      },
+      "runAfter": {
+        "Start_and_wait_for_an_approval": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Respond_to_a_Power_App_or_flow": {
+      "type": "Response",
+      "kind": "PowerApp",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "status": "@body('Start_and_wait_for_an_approval')?['outcome']",
+          "comments": "@{body('Start_and_wait_for_an_approval')?['responses'][0]['comments']}"
+        },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "comments": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "Condition": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

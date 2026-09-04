@@ -1,0 +1,16 @@
+# credentials — never commit
+.env
+.claude/lms_tms_api_key
+*.key
+
+# confidential: assessment papers and answer keys are trainer-only
+assessment/
+
+# build noise
+__pycache__/
+*.pyc
+.DS_Store
+.playwright-mcp/
+
+# reference material pulled from Drive/TMS (not ours to redistribute)
+reference/

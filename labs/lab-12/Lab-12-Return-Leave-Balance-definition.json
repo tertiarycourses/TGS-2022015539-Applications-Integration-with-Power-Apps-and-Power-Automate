@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "PowerApps_(V2)": {
+      "type": "Request",
+      "kind": "PowerApp",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "Applicant": {
+              "type": "string"
+            },
+            "Days": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "Compose_balance": {
+      "type": "Compose",
+      "inputs": "@sub(14, int(triggerBody()['Days']))",
+      "runAfter": {}
+    },
+    "Compose_reference": {
+      "type": "Compose",
+      "inputs": "@concat('LV-', formatDateTime(utcNow(),'yyyyMMdd'), '-', rand(1000,9999))",
+      "runAfter": {
+        "Compose_balance": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Respond_to_a_Power_App_or_flow": {
+      "type": "Response",
+      "kind": "PowerApp",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "balance": "@outputs('Compose_balance')",
+          "reference": "@outputs('Compose_reference')",
+          "status": "Submitted"
+        },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "balance": {
+              "type": "number"
+            },
+            "reference": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "Compose_reference": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

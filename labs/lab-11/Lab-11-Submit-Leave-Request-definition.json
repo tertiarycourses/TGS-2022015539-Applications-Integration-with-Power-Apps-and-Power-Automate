@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "PowerApps_(V2)": {
+      "type": "Request",
+      "kind": "PowerApp",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "Applicant": {
+              "type": "string"
+            },
+            "LeaveType": {
+              "type": "string"
+            },
+            "StartDate": {
+              "type": "string"
+            },
+            "Days": {
+              "type": "number"
+            },
+            "Reason": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "Send_an_email_(V2)": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "emailMessage/To": "admin@tertiaryinfotech.onmicrosoft.com",
+          "emailMessage/Subject": "New leave request from @{triggerBody()['Applicant']}",
+          "emailMessage/Body": "<p>@{triggerBody()['Days']} day(s) of @{triggerBody()['LeaveType']} from @{triggerBody()['StartDate']}</p><p>Reason: @{triggerBody()['Reason']}</p>"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connection": "shared_office365",
+          "operationId": "SendEmailV2"
+        }
+      },
+      "runAfter": {}
+    },
+    "Add_a_row_into_a_table": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "source": "me",
+          "drive": "OneDrive",
+          "file": "/LeaveLog.xlsx",
+          "table": "LeaveLog",
+          "item/Applicant": "@triggerBody()['Applicant']",
+          "item/LeaveType": "@triggerBody()['LeaveType']",
+          "item/StartDate": "@triggerBody()['StartDate']",
+          "item/Days": "@triggerBody()['Days']",
+          "item/Status": "Submitted"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_excelonlinebusiness",
+          "connection": "shared_excelonlinebusiness",
+          "operationId": "AddRowV2"
+        }
+      },
+      "runAfter": {
+        "Send_an_email_(V2)": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

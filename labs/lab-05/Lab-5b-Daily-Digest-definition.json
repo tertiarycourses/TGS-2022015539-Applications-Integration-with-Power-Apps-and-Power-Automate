@@ -1,0 +1,84 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "Recurrence": {
+      "type": "Recurrence",
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "timeZone": "Singapore Standard Time",
+        "schedule": {
+          "hours": [
+            "18"
+          ],
+          "minutes": [
+            0
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "List_rows_present_in_a_table": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "source": "me",
+          "drive": "OneDrive",
+          "file": "/KinetEco Service Calls.xlsx",
+          "table": "ServiceCalls"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_excelonlinebusiness",
+          "connection": "shared_excelonlinebusiness",
+          "operationId": "GetItems"
+        }
+      },
+      "runAfter": {}
+    },
+    "Create_HTML_table": {
+      "type": "Table",
+      "inputs": {
+        "from": "@outputs('List_rows_present_in_a_table')?['body/value']",
+        "format": "HTML"
+      },
+      "runAfter": {
+        "List_rows_present_in_a_table": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Send_an_email_(V2)": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "emailMessage/To": "admin@tertiaryinfotech.onmicrosoft.com",
+          "emailMessage/Subject": "Daily service call digest",
+          "emailMessage/Body": "<p>Service calls logged today:</p>@{body('Create_HTML_table')}"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connection": "shared_office365",
+          "operationId": "SendEmailV2"
+        }
+      },
+      "runAfter": {
+        "Create_HTML_table": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

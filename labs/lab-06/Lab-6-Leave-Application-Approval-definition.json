@@ -1,0 +1,125 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Button",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "Applicant": {
+              "type": "string",
+              "title": "Applicant"
+            },
+            "LeaveType": {
+              "type": "string",
+              "title": "Leave Type"
+            },
+            "StartDate": {
+              "type": "string",
+              "title": "Start Date"
+            },
+            "Days": {
+              "type": "number",
+              "title": "Days"
+            },
+            "Reason": {
+              "type": "string",
+              "title": "Reason"
+            }
+          },
+          "required": [
+            "Applicant",
+            "LeaveType",
+            "StartDate",
+            "Days"
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "Start_and_wait_for_an_approval": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "parameters": {
+          "approvalType": "Basic",
+          "ApprovalCreationInput/title": "Leave request from @{triggerBody()?['Applicant']}",
+          "ApprovalCreationInput/assignedTo": "admin@tertiaryinfotech.onmicrosoft.com",
+          "ApprovalCreationInput/details": "@{triggerBody()?['Days']} day(s) of @{triggerBody()?['LeaveType']} from @{triggerBody()?['StartDate']}. Reason: @{triggerBody()?['Reason']}"
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_approvals",
+          "connection": "shared_approvals",
+          "operationId": "StartAndWaitForAnApproval"
+        }
+      },
+      "runAfter": {}
+    },
+    "Condition": {
+      "type": "If",
+      "expression": {
+        "equals": [
+          "@body('Start_and_wait_for_an_approval')?['outcome']",
+          "Approve"
+        ]
+      },
+      "actions": {
+        "Notify_approved": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "emailMessage/To": "@triggerBody()?['Applicant']",
+              "emailMessage/Subject": "Leave request APPROVED",
+              "emailMessage/Body": "<p>Your leave request has been approved.</p>"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+              "connection": "shared_office365",
+              "operationId": "SendEmailV2"
+            }
+          },
+          "runAfter": {}
+        }
+      },
+      "else": {
+        "actions": {
+          "Notify_rejected": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "emailMessage/To": "@triggerBody()?['Applicant']",
+                "emailMessage/Subject": "Leave request REJECTED",
+                "emailMessage/Body": "<p>Your request was rejected. Comments: @{body('Start_and_wait_for_an_approval')?['responses'][0]['comments']}</p>"
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+                "connection": "shared_office365",
+                "operationId": "SendEmailV2"
+              }
+            },
+            "runAfter": {}
+          }
+        }
+      },
+      "runAfter": {
+        "Start_and_wait_for_an_approval": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}
