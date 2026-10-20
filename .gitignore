@@ -14,3 +14,10 @@ __pycache__/
 
 # reference material pulled from Drive/TMS (not ours to redistribute)
 reference/
+
+# Facilitator Guide + Assessment Plan embed the answer keys and rubric:
+# trainer-only (Google Drive + TMS), never GitHub
+**/FG_*
+**/FG-*
+**/Assessment_Plan_*
+**/AP-*

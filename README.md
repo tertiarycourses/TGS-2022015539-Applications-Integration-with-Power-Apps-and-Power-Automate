@@ -1,14 +1,20 @@
 # WSQ — Applications Integration with Power Apps and Power Automate
 
-**Course code:** TGS-2022015539  ·  **TSC:** Applications Integration (ICT-DIT-3003-1.1), Proficiency Level 3
-**Duration:** 2 days · 16 hours (13.5 hours delivery + 2.5 hours assessment)
-**Conducted by:** Tertiary Infotech Academy Pte Ltd · UEN 201200696W
+Spot, test, build, join and repair application integrations on the Microsoft Power Platform through 14 progressive hands-on labs.
 
-[Register for this course](https://www.tertiarycourses.com.sg/wsq-applications-integration-with-power-apps-and-power-automate.html)
+| Course detail | Information |
+|---|---|
+| Course code | `TGS-2022015539` |
+| Programme | WSQ |
+| TSC | Applications Integration · `ICT-DIT-3003-1.1`, Proficiency Level 3 |
+| Duration | 2 days · 16 hours (13.5 hours delivery + 2.5 hours assessment) |
+| Registration | [View course details and register](https://www.tertiarycourses.com.sg/wsq-applications-integration-with-power-apps-and-power-automate.html) |
+| Funding | Up to 70% course fee funding (50% baseline for SG/PR aged 21+; 70% for Singapore Citizens aged 40+ under MCES and SME-sponsored staff). Eligibility and terms apply — see the course page. |
+| Courseware version | v8.0 |
 
 ---
 
-## What you learn
+## About the course
 
 Most business software is bought, not built — the value you add is making the pieces talk
 to each other. This course teaches application integration with the Microsoft Power
@@ -16,7 +22,7 @@ Platform: how to spot an integration opportunity, test whether it is feasible, b
 automation in Power Automate, build the interface in Power Apps, join the two together,
 and then diagnose and repair the integration when it breaks.
 
-### Learning outcomes
+## Learning outcomes
 
 | | Outcome |
 |---|---|
@@ -25,7 +31,14 @@ and then diagnose and repair the integration when it breaks.
 | **LO3** | Create Power Apps canvas apps and verify their functionalities |
 | **LO4** | Improve Power Apps with Power Automate flows, and resolve integration issues |
 
-## The labs
+## Topics covered
+
+1. Opportunities for using Power Platform apps and feasibility scanning
+2. Power Automate — automated, scheduled and approval flows with conditions and branching
+3. Power Apps — canvas apps from data and from blank, custom connectors and cross-platform verification
+4. Integrating Power Apps and Power Automate — calling flows, returning data, end-to-end approvals and repairing broken integrations
+
+## Labs
 
 14 hands-on labs, each building on the artefact the previous one produced. Work them in
 order — skipping ahead leaves you without the flow or the table the next lab expects.
@@ -66,14 +79,15 @@ training tenant does not remove another learner's work.
 
 | File | What it is |
 |---|---|
-| `Applications Integration with Power Apps and Power Automate-v8.0.pptx` | Trainer slide deck (108 slides) |
-| `LP-Applications Integration with Power Apps and Power Automate.docx` | Lesson Plan — 2-day schedule, 480 minutes per day |
-| `LG-Applications Integration with Power Apps and Power Automate.docx` | Learner Guide — the detailed step-by-step for all 14 labs |
-| `LG-Applications Integration with Power Apps and Power Automate.md` | Markdown mirror of the Learner Guide |
+| [Slide deck PPTX](courseware/Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate-v8.0.pptx) · [PDF](courseware/Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate-v8.0.pdf) | Trainer slide deck (108 slides) |
+| [Lesson Plan DOCX](courseware/LP-Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate.docx) · [PDF](courseware/LP-Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate.pdf) | Lesson Plan — 2-day schedule, 480 minutes per day |
+| [Learner Guide DOCX](courseware/LG-Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate.docx) · [PDF](courseware/LG-Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate.pdf) | Learner Guide — the detailed step-by-step for all 14 labs |
+| [LG Markdown](LG-Applications%20Integration%20with%20Power%20Apps%20and%20Power%20Automate.md) | Markdown mirror of the Learner Guide |
 | `labs/` | 14 lab folders — instructions, data and packages |
 
 The slides carry the concepts and the shape of each lab; the **detailed procedure lives in
-the Learner Guide**, not on the slides.
+the Learner Guide**, not on the slides. The slide deck includes the "Login to LMS and Download
+Course Material" slide showing the current lms-tms.tertiaryinfotech.com sign-in page.
 
 ## Assessment
 
@@ -82,7 +96,12 @@ the Learner Guide**, not on the slides.
 | Written Assessment (SAQ) | 5 open-ended questions · 1 hour · open book | K1–K5 |
 | Practical Performance (PP) | 4 scenario tasks · 1.5 hours · open book | A1–A8 |
 
-Assessment papers are confidential and are **not** published in this repository.
+## Distribution boundary
+
+The slide deck, Learner Guide, Lesson Plan and labs are published in this repository. Assessment
+papers, answer keys, the Facilitator Guide, the Assessment Plan, source references and credentials
+are confidential and are **not** published; they are distributed through the approved Google Drive /
+LMS workflow only.
 
 ## Support
 
@@ -92,4 +111,4 @@ LMS / TMS: [lms-tms.tertiaryinfotech.com](https://lms-tms.tertiaryinfotech.com)
 
 ---
 
-© 2026 Tertiary Infotech Academy Pte Ltd. All rights reserved.
+Provided by **Tertiary Infotech Academy Pte Ltd** · UEN 201200696W · © 2026 Tertiary Infotech Academy Pte Ltd. All rights reserved.
